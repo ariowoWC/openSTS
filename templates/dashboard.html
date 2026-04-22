@@ -5,6 +5,33 @@
     <title>Title</title>
 </head>
 <body>
+<nav>
+    <a href="/home">Home</a>
+    <a href="/addticket">Add session</a>
+</nav>
+<br>
+<br>
+<table>
+    <thead>
+        <tr>
+            <th>Raised by</th>
+            <th>Ticket type</th>
+            <th>Description</th>
+            <th>Ticket ID</th>
+        </tr>
+    </thead>
+    <tbody>
 
+    {% for ticket_id in tickets %}
+        <tr>
+        <td> {{ ticket_id[1] }} </td>
+        <td> {{ ticket_id[2] }} </td>
+        <td> {{ ticket_id[3] }} </td>
+        <td> {{ ticket_id[0] }} </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+
+</table>
 </body>
 </html>

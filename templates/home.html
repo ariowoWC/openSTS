@@ -8,15 +8,14 @@
 <body>
 <nav>
     <a href="/dashboard">Dashboard</a>
-    <a href="/addsession">Add session</a>
 </nav>
 <br>
 <br>
     {% block main %}
         {% if session.user_email %}
-      You are registered as {{ session.user_email }}.
+      You are logged in as {{ session.user_email }}.
    {% else %}
-      You are not registered. <a href="/login">Login</a>.
+      You are not logged in. <a href="/login">Login</a>.
    {% endif %}
 
     {% endblock %}

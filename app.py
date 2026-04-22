@@ -5,7 +5,7 @@ from sqlite3 import Error
 
 app = Flask(__name__)
 
-DATABASE = "C:/Users/22240/PycharmProjects/openSTS/openSTS_data"
+DATABASE = "C:/Users/22240/openSTS/openSTS_data"
 app.secret_key = '284193f6c8b91412f1aca22df5bab32f21fe895e9a26006b0ac679da12fad160'
 app.config["SESSION_PERMANENT"] = True
 app.config["SESSION_TYPE"] = "filesystem"
@@ -23,6 +23,11 @@ def connect_database(db_file):
 
 @app.route('/', methods=['POST', 'GET'])
 def render_homepage():
+    return redirect("/home")
+
+
+@app.route('/login', methods=['POST', 'GET'])
+def render_login():
     if request.method == 'POST':
         user_email = request.form.get('user_email').lower().strip()
         user_password = request.form.get('user_password')
@@ -35,7 +40,6 @@ def render_homepage():
         user_info = cur.fetchall()
         con.close()
         print(user_info[0][2])
-
 
         try:
             user_email = user_info[0][1]
@@ -51,8 +55,8 @@ def render_homepage():
 
         session['user_email'] = user_email
 
-        return redirect('/authed_base')
-    return render_template('landing.html')
+        return redirect('/home')
+    return render_template("login.html")
 
 
 @app.route('/signup', methods=['POST', 'GET'])
@@ -73,18 +77,43 @@ def render_tutor_signup_page():
     return render_template('signup.html')
 
 
-@app.route('/authed_base')
+@app.route('/home')
 def render_authed_base():
     session.get("user_email")
-    return render_template('authed_base.html')
+    return render_template('home.html')
 
 
-@app.route('/dashboard'):
+@app.route('/dashboard')
 def render_dashboard():
     if not session.get("user_email"):
         return redirect("/login")
-    return render_template("dashboard.html")
+    con = connect_database(DATABASE)
+    query = "SELECT ticket_id, ticket_user, ticket_type, ticket_desc FROM tickets"
+    con = connect_database(DATABASE)
+    cur = con.cursor()
+    cur.execute(query)
+    tickets_data = cur.fetchall()
+    print(tickets_data)
+    con.close()
 
+    return render_template("dashboard.html", tickets=tickets_data)
+
+
+@app.route('/addticket')
+def render_add_ticket():
+    if request.method == 'POST':
+        ticket_type = request.form.get('ticket_type')
+        ticket_desc = request.form.get('ticket_desc')
+        ticket_user = session.get("user_email")
+
+        con = connect_database(DATABASE)
+        query_insert = "INSERT INTO tickets (ticket_user, ticket_time, ticket_type, ticket_desc) VALUES (?, ?, ?)"
+        cur = con.cursor()
+        cur.execute(query_insert, (ticket_user, ticket_time, ticket_type, ticket_desc))
+        con.commit()
+        con.close()
+
+    return render_template('addticket.html')
 
 
 if __name__ == '__main__':
