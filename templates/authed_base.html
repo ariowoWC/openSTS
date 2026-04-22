@@ -8,13 +8,16 @@
 <body>
 <nav>
     <a href="/dashboard">Dashboard</a>
-    <a href="/login">Log In</a>
-    <a href="/tutor_signup">Tutor Signup</a>
-    <a href="/tutee_signup">Student Signup</a>
     <a href="/addsession">Add session</a>
 </nav>
-
+<br>
+<br>
     {% block main %}
+        {% if session.user_email %}
+      You are registered as {{ session.user_email }}.
+   {% else %}
+      You are not registered. <a href="/login">Login</a>.
+   {% endif %}
 
     {% endblock %}
 

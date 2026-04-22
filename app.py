@@ -7,6 +7,8 @@ app = Flask(__name__)
 
 DATABASE = "C:/Users/22240/PycharmProjects/openSTS/openSTS_data"
 app.secret_key = '284193f6c8b91412f1aca22df5bab32f21fe895e9a26006b0ac679da12fad160'
+app.config["SESSION_PERMANENT"] = True
+app.config["SESSION_TYPE"] = "filesystem"
 
 
 def connect_database(db_file):
@@ -49,7 +51,7 @@ def render_homepage():
 
         session['user_email'] = user_email
 
-        return redirect('/')
+        return redirect('/authed_base')
     return render_template('landing.html')
 
 
@@ -67,8 +69,22 @@ def render_tutor_signup_page():
         cur.execute(query_insert, (tutor_fname, tutor_lname, tutor_email, tutor_password))
         con.commit()
         con.close()
-
+        return redirect('/')
     return render_template('signup.html')
+
+
+@app.route('/authed_base')
+def render_authed_base():
+    session.get("user_email")
+    return render_template('authed_base.html')
+
+
+@app.route('/dashboard'):
+def render_dashboard():
+    if not session.get("user_email"):
+        return redirect("/login")
+    return render_template("dashboard.html")
+
 
 
 if __name__ == '__main__':
