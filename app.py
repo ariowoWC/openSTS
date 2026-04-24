@@ -1,11 +1,12 @@
 from flask import Flask, render_template, request, redirect, session, make_response
+from datetime import datetime
 import os
 import sqlite3
 from sqlite3 import Error
 
 app = Flask(__name__)
 
-DATABASE = "C:/Users/22240/openSTS/openSTS_data"
+DATABASE = "C:/Users/22240/PycharmProjects/openSTS/openSTS_data"
 app.secret_key = '284193f6c8b91412f1aca22df5bab32f21fe895e9a26006b0ac679da12fad160'
 app.config["SESSION_PERMANENT"] = True
 app.config["SESSION_TYPE"] = "filesystem"
@@ -99,21 +100,28 @@ def render_dashboard():
     return render_template("dashboard.html", tickets=tickets_data)
 
 
-@app.route('/addticket')
+@app.route('/addticket', methods=['POST', 'GET'])
 def render_add_ticket():
     if request.method == 'POST':
         ticket_type = request.form.get('ticket_type')
         ticket_desc = request.form.get('ticket_desc')
         ticket_user = session.get("user_email")
+        ticket_time = datetime.utcnow().timestamp()
 
         con = connect_database(DATABASE)
-        query_insert = "INSERT INTO tickets (ticket_user, ticket_time, ticket_type, ticket_desc) VALUES (?, ?, ?)"
+        query_insert = "INSERT INTO tickets (ticket_user, ticket_time, ticket_type, ticket_desc) VALUES (?, ?, ?, ?)"
         cur = con.cursor()
         cur.execute(query_insert, (ticket_user, ticket_time, ticket_type, ticket_desc))
         con.commit()
         con.close()
 
     return render_template('addticket.html')
+
+
+@app.route("/signout")
+def logout():
+    session["user_email"] = None
+    return redirect("/")
 
 
 if __name__ == '__main__':
