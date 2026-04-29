@@ -1,10 +1,11 @@
 from flask import Flask, render_template, request, redirect, session, make_response
 from datetime import datetime
-import os
 import sqlite3
 from sqlite3 import Error
+from flask_bcrypt import Bcrypt
 
 app = Flask(__name__)
+bcrypt = Bcrypt(app)
 
 DATABASE = "C:/Users/22240/PycharmProjects/openSTS/openSTS_data"
 app.secret_key = '284193f6c8b91412f1aca22df5bab32f21fe895e9a26006b0ac679da12fad160'
@@ -43,19 +44,17 @@ def render_login():
         con.close()
         user_type = user_info[0][3]
         print(user_type)
-        print
 
         try:
             user_email = user_info[0][1]
-            db_password = user_info[0][2]
 
         except IndexError:
             print("invalid email")
-            return redirect('/login?error=invalid+email+or+password')
+            return redirect('/login?error=invalid+email')
 
-        if db_password != user_password:
+        if not bcrypt.check_password_hash(user_info[0][2], user_password):
             print("invalid password")
-            return redirect('/login?error=invalid+email+or+password')
+            return redirect('/login?error=invalid+password')
 
         session['user_email'] = user_email
         session['user_type'] = user_type
@@ -69,15 +68,15 @@ def render_login():
 @app.route('/signup', methods=['POST', 'GET'])
 def render_tutor_signup_page():
     if request.method == 'POST':
-        tutor_fname = request.form.get('user_fname').title().strip()
-        tutor_lname = request.form.get('user_lname').title().strip()
-        tutor_email = request.form.get('user_email').lower().strip()
-        tutor_password = request.form.get('user_password')
+        user_fname = request.form.get('user_fname').title().strip()
+        user_lname = request.form.get('user_lname').title().strip()
+        user_email = request.form.get('user_email').lower().strip()
+        user_password = bcrypt.generate_password_hash(request.form.get('user_password'))
 
         con = connect_database(DATABASE)
         query_insert = "INSERT INTO user (user_fname, user_lname, user_email, user_password, user_type) VALUES (?, ?, ?, ?, ?)"
         cur = con.cursor()
-        cur.execute(query_insert, (tutor_fname, tutor_lname, tutor_email, tutor_password, "user"))
+        cur.execute(query_insert, (user_fname, user_lname, user_email, user_password, "user"))
         con.commit()
         con.close()
         return redirect('/')
