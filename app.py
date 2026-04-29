@@ -87,6 +87,7 @@ def render_tutor_signup_page():
 @app.route('/home')
 def render_authed_base():
     session.get("user_email")
+    session.get("user_type")
     return render_template('home.html')
 
 
@@ -101,7 +102,7 @@ def render_dashboard():
 
     if user_type == "user":
         con = connect_database(DATABASE)
-        query = "SELECT ticket_id, ticket_user, ticket_type, ticket_desc FROM tickets WHERE ticket_user = ?"
+        query = "SELECT ticket_id, ticket_user, ticket_type, ticket_desc, ticket_time FROM tickets WHERE ticket_user = ?"
         con = connect_database(DATABASE)
         cur = con.cursor()
         cur.execute(query, (user_email,))
@@ -111,7 +112,7 @@ def render_dashboard():
 
     if user_type == "admin":
         con = connect_database(DATABASE)
-        query = "SELECT ticket_id, ticket_user, ticket_type, ticket_desc FROM tickets"
+        query = "SELECT ticket_id, ticket_user, ticket_type, ticket_desc, ticket_time FROM tickets"
         con = connect_database(DATABASE)
         cur = con.cursor()
         cur.execute(query)

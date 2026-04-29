@@ -15,6 +15,7 @@
     {% block main %}
         {% if session.user_email %}
       You are logged in as {{ session.user_email }}.
+            You have {{ session.user_type }} privileges.
    {% else %}
       You are not logged in. <a href="/login">Login</a>.
    {% endif %}
