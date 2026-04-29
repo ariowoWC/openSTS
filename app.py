@@ -25,6 +25,7 @@ def connect_database(db_file):
 @app.route('/', methods=['POST', 'GET'])
 def render_homepage():
     return redirect("/home")
+    print(session.get("user_type"))
 
 
 @app.route('/login', methods=['POST', 'GET'])
@@ -33,14 +34,16 @@ def render_login():
         user_email = request.form.get('user_email').lower().strip()
         user_password = request.form.get('user_password')
 
-        query = "SELECT user_id, user_email, user_password FROM user WHERE user_email = ?"
+        query = "SELECT user_id, user_email, user_password, user_type FROM user WHERE user_email = ?"
 
         con = connect_database(DATABASE)
         cur = con.cursor()
         cur.execute(query, (user_email,))
         user_info = cur.fetchall()
         con.close()
-        print(user_info[0][2])
+        user_type = user_info[0][3]
+        print(user_type)
+        print
 
         try:
             user_email = user_info[0][1]
@@ -55,6 +58,9 @@ def render_login():
             return redirect('/login?error=invalid+email+or+password')
 
         session['user_email'] = user_email
+        session['user_type'] = user_type
+
+        print(session.get("user_type"))
 
         return redirect('/home')
     return render_template("login.html")
@@ -69,9 +75,9 @@ def render_tutor_signup_page():
         tutor_password = request.form.get('user_password')
 
         con = connect_database(DATABASE)
-        query_insert = "INSERT INTO user (user_fname, user_lname, user_email, user_password) VALUES (?, ?, ?, ?)"
+        query_insert = "INSERT INTO user (user_fname, user_lname, user_email, user_password, user_type) VALUES (?, ?, ?, ?, ?)"
         cur = con.cursor()
-        cur.execute(query_insert, (tutor_fname, tutor_lname, tutor_email, tutor_password))
+        cur.execute(query_insert, (tutor_fname, tutor_lname, tutor_email, tutor_password, "user"))
         con.commit()
         con.close()
         return redirect('/')
@@ -86,19 +92,34 @@ def render_authed_base():
 
 @app.route('/dashboard')
 def render_dashboard():
-    if not session.get("user_email"):
+    user_email = session.get("user_email")
+    user_type = session.get("user_type")
+    print(user_type)
+
+    if not user_email:
         return redirect("/login")
-    con = connect_database(DATABASE)
-    query = "SELECT ticket_id, ticket_user, ticket_type, ticket_desc FROM tickets"
-    con = connect_database(DATABASE)
-    cur = con.cursor()
-    cur.execute(query)
-    tickets_data = cur.fetchall()
-    print(tickets_data)
-    con.close()
+
+    if user_type == "user":
+        con = connect_database(DATABASE)
+        query = "SELECT ticket_id, ticket_user, ticket_type, ticket_desc FROM tickets WHERE ticket_user = ?"
+        con = connect_database(DATABASE)
+        cur = con.cursor()
+        cur.execute(query, (user_email,))
+        tickets_data = cur.fetchall()
+        print(tickets_data)
+        con.close()
+
+    if user_type == "admin":
+        con = connect_database(DATABASE)
+        query = "SELECT ticket_id, ticket_user, ticket_type, ticket_desc FROM tickets"
+        con = connect_database(DATABASE)
+        cur = con.cursor()
+        cur.execute(query)
+        tickets_data = cur.fetchall()
+        print(tickets_data)
+        con.close()
 
     return render_template("dashboard.html", tickets=tickets_data)
-
 
 @app.route('/addticket', methods=['POST', 'GET'])
 def render_add_ticket():
