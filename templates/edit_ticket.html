@@ -1,0 +1,29 @@
+{% extends 'home.html' %}
+
+{% block main %}
+    <h1>Edit ticket</h1>
+
+    <h2>Add reply</h2>
+    <form method="post">
+        <div class="form-group">
+            <div class="form-label">Reply:</div>
+            <div class="form-element"><input type="text" name="reply"></div>
+        </div>
+        <div class="form-group">
+            <div class="form-label"></div>
+            <div class="form-element"><input type="submit" value="Submit"></div>
+        </div>
+    </form>
+
+    <h2>Edit ticket</h2>
+    <form method="post">
+        <div class="form-group">
+            <div class="form-label"></div>
+            <div class="form-element"><input type="text" name="edit_contents"></div>
+        </div>
+        <div class="form-group">
+            <div class="form-label"></div>
+            <div class="form-element"><input type="submit" value="Submit"></div>
+        </div>
+    </form>
+{% endblock %}

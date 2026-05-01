@@ -1,10 +1,11 @@
 body {
-  font-family: Arial;
+  font-family: Arial, sans-serif;
 }
 
 table {
   border-collapse: collapse;
-  width: 100%;
+  width: 90%;
+
 }
 
 td, th {
@@ -25,16 +26,24 @@ th {
 
 nav {
   text-decoration: none;
-  background-color: gray;
-  text-align: center;
+  background-color: lightsalmon;
   font-size: 1.5rem;
   padding-top: 0.4rem;
   padding-bottom: 0.7rem;
   display: flex;
-  justify-content: space-evenly;
-
+  justify-content: normal;
 }
 
 a {
   text-decoration: none;
+  padding-left: 50px;
+  padding-right: 50px;
+}
+
+form{
+  padding-left: 50px;
+}
+
+h1, h2, p{
+  padding-left: 50px;
 }
