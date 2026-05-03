@@ -35,6 +35,8 @@ def render_login():
     if request.method == 'POST':
         user_email = bleach.clean(request.form.get('user_email').lower().strip())
         user_password = bleach.clean(request.form.get('user_password'))
+        # takes the email and password from the input form, sanitizes it and assigns it to a variable
+
         query = "SELECT user_id, user_email, user_password, user_type FROM user WHERE user_email = ?"
 
         con = connect_database(DATABASE)
@@ -47,6 +49,7 @@ def render_login():
 
         try:
             user_email = user_info[0][1]
+            # checks if the provided email exists
 
         except IndexError:
             print("invalid email")
@@ -55,9 +58,11 @@ def render_login():
         if not bcrypt.check_password_hash(user_info[0][2], user_password):
             print("invalid password")
             return redirect('/login?error=invalid+password')
+            # compares the provided password's hash to the one in the database
 
         session['user_email'] = user_email
         session['user_type'] = user_type
+        # turns user info into a cookie
 
         print(session.get("user_type"))
 
@@ -72,9 +77,12 @@ def render_tutor_signup_page():
         user_lname = bleach.clean(request.form.get('user_lname').title().strip())
         user_email = bleach.clean(request.form.get('user_email').lower().strip())
         user_password = bcrypt.generate_password_hash(request.form.get('user_password'))
+        # sanitizes inputs and assigns them to a variable
+
+        query_insert = "INSERT INTO user (user_fname, user_lname, user_email, user_password, user_type) "\
+                       "VALUES (?, ?, ?, ?, ?)"
 
         con = connect_database(DATABASE)
-        query_insert = "INSERT INTO user (user_fname, user_lname, user_email, user_password, user_type) VALUES (?, ?, ?, ?, ?)"
         cur = con.cursor()
         cur.execute(query_insert, (user_fname, user_lname, user_email, user_password, "user"))
         con.commit()
@@ -101,7 +109,8 @@ def render_dashboard():
 
     if user_type == "user":
         con = connect_database(DATABASE)
-        query = "SELECT ticket_id, ticket_user, ticket_type, ticket_desc, ticket_time FROM tickets WHERE ticket_user = ?"
+        query = "SELECT ticket_id, ticket_user, ticket_type, ticket_desc, ticket_time " \
+                "FROM tickets WHERE ticket_user = ?"
         con = connect_database(DATABASE)
         cur = con.cursor()
         cur.execute(query, (user_email,))
@@ -120,6 +129,7 @@ def render_dashboard():
         con.close()
 
     return render_template("dashboard.html", tickets=tickets_data)
+
 
 @app.route('/addticket', methods=['POST', 'GET'])
 def render_add_ticket():
