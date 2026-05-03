@@ -3,6 +3,7 @@ from datetime import datetime
 import sqlite3
 from sqlite3 import Error
 from flask_bcrypt import Bcrypt
+import bleach
 
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
@@ -32,9 +33,8 @@ def render_homepage():
 @app.route('/login', methods=['POST', 'GET'])
 def render_login():
     if request.method == 'POST':
-        user_email = request.form.get('user_email').lower().strip()
-        user_password = request.form.get('user_password')
-
+        user_email = bleach.clean(request.form.get('user_email').lower().strip())
+        user_password = bleach.clean(request.form.get('user_password'))
         query = "SELECT user_id, user_email, user_password, user_type FROM user WHERE user_email = ?"
 
         con = connect_database(DATABASE)
@@ -68,9 +68,9 @@ def render_login():
 @app.route('/signup', methods=['POST', 'GET'])
 def render_tutor_signup_page():
     if request.method == 'POST':
-        user_fname = request.form.get('user_fname').title().strip()
-        user_lname = request.form.get('user_lname').title().strip()
-        user_email = request.form.get('user_email').lower().strip()
+        user_fname = bleach.clean(request.form.get('user_fname').title().strip())
+        user_lname = bleach.clean(request.form.get('user_lname').title().strip())
+        user_email = bleach.clean(request.form.get('user_email').lower().strip())
         user_password = bcrypt.generate_password_hash(request.form.get('user_password'))
 
         con = connect_database(DATABASE)
@@ -140,9 +140,22 @@ def render_add_ticket():
 
 
 @app.route("/signout")
-def logout():
+def render_logout():
     session["user_email"] = None
     return redirect("/")
+
+
+@app.route("/edit")
+def render_edit(ticket_id):
+    if request.method == 'POST':
+        edit = request.form.get('edit_contents')
+        con = connect_database(DATABASE)
+        query_edit = "UPDATE tickets SET ticket_desc = ? WHERE ticket_id = ?"
+        cur = con.cursor()
+        cur.execute(query_edit, (edit, ticket_id))
+        con.commit()
+        con.close()
+    return render_template('edit_ticket.html')
 
 
 if __name__ == '__main__':
