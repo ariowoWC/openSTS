@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, session, make_response
+from flask import Flask, render_template, request, redirect, session
 from datetime import datetime
 import sqlite3
 from sqlite3 import Error
@@ -27,7 +27,6 @@ def connect_database(db_file):
 @app.route('/', methods=['POST', 'GET'])
 def render_homepage():
     return redirect("/home")
-    print(session.get("user_type"))
 
 
 @app.route('/login', methods=['POST', 'GET'])
@@ -108,7 +107,6 @@ def render_dashboard():
         return redirect("/login")
 
     if user_type == "user":
-        con = connect_database(DATABASE)
         query = "SELECT ticket_id, ticket_user, ticket_type, ticket_desc, ticket_time " \
                 "FROM tickets WHERE ticket_user = ?"
         con = connect_database(DATABASE)
@@ -119,7 +117,6 @@ def render_dashboard():
         con.close()
 
     if user_type == "admin":
-        con = connect_database(DATABASE)
         query = "SELECT ticket_id, ticket_user, ticket_type, ticket_desc, ticket_time FROM tickets"
         con = connect_database(DATABASE)
         cur = con.cursor()
