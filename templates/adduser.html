@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add User</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<nav>
+    <div class="nav-links">
+        <a href="/home">Home</a>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/signout">Signout</a>
+    </div>
+</nav>
+
+<h1>Add New User</h1>
+
+{% if request.args.get('success') %}
+<p style="color: green; padding-left: 50px;">{{ request.args.get('success').replace('+', ' ') }}</p>
+{% endif %}
+
+<form method="POST" style="max-width: 400px; padding-left: 50px;">
+    <div>
+        <label for="fname">First Name:</label><br>
+        <input type="text" id="fname" name="fname" required>
+    </div>
+    <br>
+    <div>
+        <label for="lname">Last Name:</label><br>
+        <input type="text" id="lname" name="lname" required>
+    </div>
+    <br>
+    <div>
+        <label for="email">Email:</label><br>
+        <input type="email" id="email" name="email" required>
+    </div>
+    <br>
+    <div>
+        <label for="password">Password:</label><br>
+        <input type="password" id="password" name="password" required>
+    </div>
+    <br>
+    <div>
+        <label for="user_type">User Type:</label><br>
+        <select id="user_type" name="user_type" required>
+            <option value="user">User</option>
+            <option value="admin">Admin</option>
+        </select>
+    </div>
+    <br>
+    <button type="submit">Add User</button>
+</form>
+
+</body>
+</html>

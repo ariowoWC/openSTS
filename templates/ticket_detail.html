@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ticket Details</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<nav>
+    <div class="nav-links">
+        <a href="/home">Home</a>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/addticket">Create Ticket</a>
+    </div>
+</nav>
+
+<div class="ticket-detail-container">
+    <h1>Ticket #{{ ticket[0] }}</h1>
+    
+    {% if request.args.get('success') %}
+    <div class="alert alert-success">
+        {{ request.args.get('success').replace('+', ' ') }}
+    </div>
+    {% endif %}
+
+    <div class="ticket-info">
+        <label>ID:</label>
+        <p>{{ ticket[0] }}</p>
+    </div>
+
+    <div class="ticket-info">
+        <label>From:</label>
+        <p>{{ ticket[1] }}</p>
+    </div>
+
+    <div class="ticket-info">
+        <label>Type:</label>
+        <p>{{ ticket[2] }}</p>
+    </div>
+
+    <div class="ticket-info">
+        <label>Description:</label>
+        <div id="description-view">
+            <p>{{ ticket[3] }}</p>
+        </div>
+        <div class="edit-form" id="description-edit">
+            <form method="POST">
+                <textarea name="ticket_desc" required>{{ ticket[3] }}</textarea>
+                <div class="button-group">
+                    <button type="submit" name="action" value="edit" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-secondary" onclick="toggleEdit()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="ticket-info">
+        <label>Date:</label>
+        <p>{{ ticket[4] }}</p>
+    </div>
+
+    <div class="button-group">
+        <button type="button" class="btn btn-primary" onclick="toggleEdit()">Edit</button>
+        
+        <form method="POST" style="display:inline;">
+            <button type="submit" name="action" value="delete" class="btn btn-danger" onclick="return confirm('Delete this?');">Delete</button>
+        </form>
+        
+        <a href="/dashboard" class="btn btn-secondary">Back</a>
+    </div>
+
+    <div style="margin-top: 40px; border-top: 2px solid #ddd; padding-top: 20px;">
+        <h2>Replies</h2>
+        
+        {% if replies %}
+            {% for reply in replies %}
+            <div class="ticket-info" style="background-color: #e8f4f8; margin-bottom: 15px;">
+                <p><strong>{{ reply[1] }}</strong></p>
+                <p>{{ reply[2] }}</p>
+                <p style="font-size: 0.9em; color: #666;">{{ reply[3] }}</p>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p>No replies yet.</p>
+        {% endif %}
+
+        <h3 style="margin-top: 20px;">Add Reply</h3>
+        <form method="POST" action="/addreply/{{ ticket[0] }}">
+            <textarea name="reply_text" required placeholder="Type your reply here"></textarea>
+            <div style="margin-top: 10px;">
+                <button type="submit" class="btn btn-primary">Post Reply</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function toggleEdit() {
+        var edit = document.getElementById('description-edit');
+        var view = document.getElementById('description-view');
+        
+        if (edit.classList.contains('active')) {
+            edit.classList.remove('active');
+            view.style.display = 'block';
+        } else {
+            edit.classList.add('active');
+            view.style.display = 'none';
+        }
+    }
+</script>
+
+</body>
+</html>

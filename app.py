@@ -8,7 +8,7 @@ import bleach
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
 
-DATABASE = "C:/Users/22240/PycharmProjects/openSTS/openSTS_data"
+DATABASE = "C:/Users/Bach/Documents/openSTS/openSTS_data.db3"
 app.secret_key = '284193f6c8b91412f1aca22df5bab32f21fe895e9a26006b0ac679da12fad160'
 app.config["SESSION_PERMANENT"] = True
 app.config["SESSION_TYPE"] = "filesystem"
@@ -90,6 +90,32 @@ def render_tutor_signup_page():
     return render_template('signup.html')
 
 
+@app.route('/adduser', methods=['POST', 'GET'])
+def add_user():
+    user_type = session.get("user_type")
+    if user_type != "admin":
+        return redirect("/home")
+    
+    if request.method == 'POST':
+        fname = bleach.clean(request.form.get('fname').title().strip())
+        lname = bleach.clean(request.form.get('lname').title().strip())
+        email = bleach.clean(request.form.get('email').lower().strip())
+        password = bcrypt.generate_password_hash(request.form.get('password'))
+        user_role = bleach.clean(request.form.get('user_type'))
+        
+        query = "INSERT INTO user (user_fname, user_lname, user_email, user_password, user_type) VALUES (?, ?, ?, ?, ?)"
+        
+        con = connect_database(DATABASE)
+        cur = con.cursor()
+        cur.execute(query, (fname, lname, email, password, user_role))
+        con.commit()
+        con.close()
+        
+        return redirect('/adduser?success=User+added')
+    
+    return render_template('adduser.html')
+
+
 @app.route('/home')
 def render_authed_base():
     session.get("user_email")
@@ -155,17 +181,67 @@ def render_logout():
     return redirect("/")
 
 
-@app.route("/edit")
-def render_edit(ticket_id):
+@app.route("/ticket/<int:ticket_id>", methods=['GET', 'POST'])
+def render_ticket_detail(ticket_id):
+    user_email = session.get("user_email")
+    if not user_email:
+        return redirect("/login")
+    
+    con = connect_database(DATABASE)
+    cur = con.cursor()
+    cur.execute("SELECT ticket_id, ticket_user, ticket_type, ticket_desc, ticket_time FROM tickets WHERE ticket_id = ?", (ticket_id,))
+    ticket = cur.fetchone()
+    
+    cur.execute("SELECT reply_id, reply_user, reply_text, reply_time FROM replies WHERE ticket_id = ? ORDER BY reply_time DESC", (ticket_id,))
+    replies = cur.fetchall()
+    con.close()
+    
+    if not ticket:
+        return redirect("/dashboard?error=ticket+not+found")
+    
+    user_type = session.get("user_type")
+    if user_type != "admin" and ticket[1] != user_email:
+        return redirect("/dashboard?error=unauthorized")
+    
     if request.method == 'POST':
-        edit = request.form.get('edit_contents')
-        con = connect_database(DATABASE)
-        query_edit = "UPDATE tickets SET ticket_desc = ? WHERE ticket_id = ?"
-        cur = con.cursor()
-        cur.execute(query_edit, (edit, ticket_id))
-        con.commit()
-        con.close()
-    return render_template('edit_ticket.html')
+        action = request.form.get('action')
+        
+        if action == 'edit':
+            new_desc = bleach.clean(request.form.get('ticket_desc'))
+            con = connect_database(DATABASE)
+            cur = con.cursor()
+            cur.execute("UPDATE tickets SET ticket_desc = ? WHERE ticket_id = ?", (new_desc, ticket_id))
+            con.commit()
+            con.close()
+            return redirect(f"/ticket/{ticket_id}?success=ticket+updated")
+        
+        elif action == 'delete':
+            con = connect_database(DATABASE)
+            cur = con.cursor()
+            cur.execute("DELETE FROM tickets WHERE ticket_id = ?", (ticket_id,))
+            con.commit()
+            con.close()
+            return redirect("/dashboard?success=ticket+deleted")
+    
+    return render_template('ticket_detail.html', ticket=ticket, replies=replies)
+
+
+@app.route("/addreply/<int:ticket_id>", methods=['POST'])
+def add_reply(ticket_id):
+    user_email = session.get("user_email")
+    if not user_email:
+        return redirect("/login")
+    
+    reply_text = bleach.clean(request.form.get('reply_text'))
+    reply_time = datetime.utcnow().timestamp()
+    
+    con = connect_database(DATABASE)
+    cur = con.cursor()
+    cur.execute("INSERT INTO replies (ticket_id, reply_user, reply_text, reply_time) VALUES (?, ?, ?, ?)", (ticket_id, user_email, reply_text, reply_time))
+    con.commit()
+    con.close()
+    
+    return redirect(f"/ticket/{ticket_id}?success=reply+added")
 
 
 if __name__ == '__main__':
