@@ -39,34 +39,6 @@
     </tbody>
 
 </table>
-  <script>
-        // Event delegation for dynamic tables
-        const table = document.getElementById('userTable');
-        table.addEventListener('click', (event) => {
-            const button = event.target.closest('.action-btn');
-            if (!button) return;
-
-            getRowColumnDetails(button);
-        });
-
-        function getRowColumnDetails(button) {
-            const cell = button.closest('td');
-            const row = cell.closest('tr');
-
-            if (!cell || !row) {
-                alert('Error: Could not find table cell or row.');
-                return;
-            }
-
-            // Calculate row index (exclude <thead> row)
-            const rowIndex = row.rowIndex - 1;
-            // Calculate column index
-            const columnIndex = cell.cellIndex;
-
-            // Display results (1-based)
-            alert(`Clicked Row: ${rowIndex + 1}\nClicked Column: ${columnIndex + 1}`);
-        }
-    </script>
 </body>
 
 </html>
