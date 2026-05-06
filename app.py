@@ -57,11 +57,11 @@ def render_login():
         if not bcrypt.check_password_hash(user_info[0][2], user_password):
             print("invalid password")
             return redirect('/login?error=invalid+password')
-            # compares the provided password's hash to the one in the database
+            # compares the provided password's hash to one pulled from the database
 
         session['user_email'] = user_email
         session['user_type'] = user_type
-        # turns user info into a cookie
+        # turns user info into a cookie if authentication successful
 
         print(session.get("user_type"))
 
@@ -105,6 +105,7 @@ def render_dashboard():
 
     if not user_email:
         return redirect("/login")
+        # checks for login cookie and redirects user to the login page if not present
 
     if user_type == "user":
         query = "SELECT ticket_id, ticket_user, ticket_type, ticket_desc, ticket_time " \
@@ -135,6 +136,7 @@ def render_add_ticket():
         ticket_desc = request.form.get('ticket_desc')
         ticket_user = session.get("user_email")
         ticket_time = datetime.utcnow().timestamp()
+        # pulls info from the form and assigns them to a variable
 
         con = connect_database(DATABASE)
         query_insert = "INSERT INTO tickets (ticket_user, ticket_time, ticket_type, ticket_desc) VALUES (?, ?, ?, ?)"
@@ -149,6 +151,7 @@ def render_add_ticket():
 @app.route("/signout")
 def render_logout():
     session["user_email"] = None
+    # sets the user cookie to null, effectively logging them out
     return redirect("/")
 
 

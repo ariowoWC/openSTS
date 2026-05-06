@@ -25,13 +25,27 @@ th {
 
 
 nav {
-  text-decoration: none;
-  background-color: lightsalmon;
-  font-size: 1.5rem;
-  padding-top: 0.4rem;
-  padding-bottom: 0.7rem;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 10;
+  background: #121212;
+}
+
+.nav-links {
   display: flex;
-  justify-content: normal;
+  gap: 1.2rem;
+}
+
+.nav-links a {
+  all: unset;
+  cursor: pointer;
+  color: #ffffff;
+  font-family: 'Roboto', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: opacity 0.3s ease;
 }
 
 a {
