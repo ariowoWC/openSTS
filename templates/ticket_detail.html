@@ -62,34 +62,32 @@
     <div class="button-group">
         <button type="button" class="btn btn-primary" onclick="toggleEdit()">Edit</button>
         
-        <form method="POST" style="display:inline;">
+        <form method="POST">
             <button type="submit" name="action" value="delete" class="btn btn-danger" onclick="return confirm('Delete this?');">Delete</button>
         </form>
         
         <a href="/dashboard" class="btn btn-secondary">Back</a>
     </div>
 
-    <div style="margin-top: 40px; border-top: 2px solid #ddd; padding-top: 20px;">
+    <div>
         <h2>Replies</h2>
         
         {% if replies %}
             {% for reply in replies %}
-            <div class="ticket-info" style="background-color: #e8f4f8; margin-bottom: 15px;">
+            <div>
                 <p><strong>{{ reply[1] }}</strong></p>
                 <p>{{ reply[2] }}</p>
-                <p style="font-size: 0.9em; color: #666;">{{ reply[3] }}</p>
+                <p>{{ reply[3] }}</p>
             </div>
             {% endfor %}
         {% else %}
             <p>No replies yet.</p>
         {% endif %}
 
-        <h3 style="margin-top: 20px;">Add Reply</h3>
+        <h3>Add Reply</h3>
         <form method="POST" action="/addreply/{{ ticket[0] }}">
             <textarea name="reply_text" required placeholder="Type your reply here"></textarea>
-            <div style="margin-top: 10px;">
-                <button type="submit" class="btn btn-primary">Post Reply</button>
-            </div>
+            <button type="submit" class="btn btn-primary">Post Reply</button>
         </form>
     </div>
 </div>

@@ -17,39 +17,39 @@
 <h1>Add New User</h1>
 
 {% if request.args.get('success') %}
-<p style="color: green; padding-left: 50px;">{{ request.args.get('success').replace('+', ' ') }}</p>
+<p>{{ request.args.get('success').replace('+', ' ') }}</p>
 {% endif %}
 
-<form method="POST" style="max-width: 400px; padding-left: 50px;">
+<form method="POST">
     <div>
-        <label for="fname">First Name:</label><br>
+        <label for="fname">First Name:</label>
         <input type="text" id="fname" name="fname" required>
     </div>
     <br>
     <div>
-        <label for="lname">Last Name:</label><br>
+        <label for="lname">Last Name:</label>
         <input type="text" id="lname" name="lname" required>
     </div>
     <br>
     <div>
-        <label for="email">Email:</label><br>
+        <label for="email">Email:</label>
         <input type="email" id="email" name="email" required>
     </div>
     <br>
     <div>
-        <label for="password">Password:</label><br>
+        <label for="password">Password:</label>
         <input type="password" id="password" name="password" required>
     </div>
     <br>
     <div>
-        <label for="user_type">User Type:</label><br>
+        <label for="user_type">User Type:</label>
         <select id="user_type" name="user_type" required>
             <option value="user">User</option>
             <option value="admin">Admin</option>
         </select>
     </div>
     <br>
-    <button type="submit">Add User</button>
+    <button type="submit" class="btn btn-primary">Add User</button>
 </form>
 
 </body>
