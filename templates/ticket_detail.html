@@ -74,14 +74,14 @@
         
         {% if replies %}
             {% for reply in replies %}
-            <div>
+            <div class="reply-box">
                 <p><strong>{{ reply[1] }}</strong></p>
                 <p>{{ reply[2] }}</p>
                 <p>{{ reply[3] }}</p>
             </div>
             {% endfor %}
         {% else %}
-            <p>No replies yet.</p>
+            <p>No replies yet</p>
         {% endif %}
 
         <h3>Add Reply</h3>
