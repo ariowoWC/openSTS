@@ -14,6 +14,12 @@ app.config["SESSION_PERMANENT"] = True
 app.config["SESSION_TYPE"] = "filesystem"
 
 
+@app.template_filter()
+def format_datetime(timestamp):
+    formatted_datetime = datetime.fromtimestamp(timestamp)
+    return formatted_datetime
+
+
 def connect_database(db_file):
     try:
         connection = sqlite3.connect(db_file)
@@ -182,6 +188,8 @@ def render_add_ticket():
     renders a ticket creation page
     :return: ticket_user, ticket_time, ticket_type, ticket_desc
     """
+    if not session.get("user_email"):
+        return redirect("/login")
     if request.method == 'POST':
         ticket_type = request.form.get('ticket_type')
         ticket_desc = request.form.get('ticket_desc')
@@ -195,6 +203,7 @@ def render_add_ticket():
         cur.execute(query_insert, (ticket_user, ticket_time, ticket_type, ticket_desc))
         con.commit()
         con.close()
+        return redirect("/dashboard")
 
     return render_template('addticket.html')
 

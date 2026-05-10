@@ -33,7 +33,7 @@
         <td> {{ ticket_id[1] }} </td>
         <td> {{ ticket_id[2] }} </td>
         <td> {{ ticket_id[3] }} </td>
-            <td>{{ ticket_id[4] }}</td>
+            <td>{{ ticket_id[4]|format_datetime }}</td>
         <td> {{ ticket_id[0] }} </td>
         <td> <a href="/ticket/{{ ticket_id[0] }}">View </a> </td>
         </tr>
