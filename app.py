@@ -16,11 +16,21 @@ app.config["SESSION_TYPE"] = "filesystem"
 
 @app.template_filter()
 def format_datetime(timestamp):
+    """
+    converts unix timestamp to readable datetime
+    :param timestamp:
+    :return: formatted_datetime
+    """
     formatted_datetime = datetime.fromtimestamp(int(timestamp))
     return formatted_datetime
 
 
 def connect_database(db_file):
+    """
+    establishes a connection to the database
+    :param db_file:
+    :return:
+    """
     try:
         connection = sqlite3.connect(db_file)
         return connection
@@ -32,6 +42,10 @@ def connect_database(db_file):
 
 @app.route('/', methods=['POST', 'GET'])
 def render_homepage():
+    """
+    redirects the user to the homepage
+    :return:
+    """
     return redirect("/home")
 
 
