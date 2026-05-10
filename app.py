@@ -16,7 +16,7 @@ app.config["SESSION_TYPE"] = "filesystem"
 
 @app.template_filter()
 def format_datetime(timestamp):
-    formatted_datetime = datetime.fromtimestamp(timestamp)
+    formatted_datetime = datetime.fromtimestamp(int(timestamp))
     return formatted_datetime
 
 
