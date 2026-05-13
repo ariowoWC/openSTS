@@ -67,11 +67,10 @@ def render_login():
         cur.execute(query, (user_email,))
         user_info = cur.fetchall()
         con.close()
-        user_type = user_info[0][3]
-        print(user_type)
 
         try:
             user_email = user_info[0][1]
+            user_type = user_info[0][3]
             # checks if the provided email exists
 
         except IndexError:
