@@ -8,7 +8,7 @@ import bleach
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
 
-DATABASE = "C:/Users/22240/PycharmProjects/openSTS/openSTS_data.db3"  # set database path here
+DATABASE = "C:/Users/Bach/Documents/openSTS/openSTS_data.db3"  # set database path here
 app.secret_key = '284193f6c8b91412f1aca22df5bab32f21fe895e9a26006b0ac679da12fad160'
 app.config["SESSION_PERMANENT"] = True
 app.config["SESSION_TYPE"] = "filesystem"
